@@ -1,7 +1,7 @@
 #ifndef TILE
 #define TILE
 
-
+//The Tile class
 class Tile {
 private:
 	char model; //A character to represent the given tile
