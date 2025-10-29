@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dream In Cube</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+</head>
+<body>
+  <main class="layout">
+    <section class="status-panel">
+      <h1>Dream In Cube</h1>
+      <p class="tagline">Navigate each cube, push boxes, ride the ice, find the stairs.</p>
+      <div class="button-row">
+        <button id="start-game" type="button">Start</button>
+        <button id="restart-game" type="button" disabled>Restart</button>
+        <button id="show-help" type="button">Help</button>
+      </div>
+      <p class="hint">Use W/A/S/D or the arrow keys to move.</p>
+      <div id="level-info" class="level-info"></div>
+      <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="game-panel" aria-label="Game board">
+      <div id="game-grid" class="grid" role="grid" aria-colcount="10" aria-rowcount="10"></div>
+    </section>
+
+    <aside class="sidebar">
+      <h2>Cube Overview</h2>
+      <div class="minimap" aria-label="Miniature cube orientation">
+        <div class="mini-row">
+          <div class="mini-cell" data-face="top" aria-label="Top face"></div>
+        </div>
+        <div class="mini-row">
+          <div class="mini-cell" data-face="left" aria-label="Left face"></div>
+          <div class="mini-cell" data-face="front" aria-label="Front face"></div>
+          <div class="mini-cell" data-face="right" aria-label="Right face"></div>
+        </div>
+        <div class="mini-row">
+          <div class="mini-cell" data-face="bottom" aria-label="Bottom face"></div>
+        </div>
+        <div class="mini-row">
+          <div class="mini-cell" data-face="back" aria-label="Back face"></div>
+        </div>
+      </div>
+      <dl class="legend">
+        <div><dt>0</dt><dd>Wall</dd></div>
+        <div><dt>#</dt><dd>Pushable box</dd></div>
+        <div><dt>+</dt><dd>Ice: slide until blocked</dd></div>
+        <div><dt>^</dt><dd>Stairs to next cube</dd></div>
+      </dl>
+    </aside>
+  </main>
+
+  <dialog id="help-dialog">
+    <form method="dialog">
+      <h2>How to Play</h2>
+      <p>Move the cube explorer with W/A/S/D (or the arrow keys). The view always follows the face you are standing on, and the minimap shows how the cube is oriented. Push boxes to clear paths, ride over ice until something stops you, and step on the stairs to reach the next cube.</p>
+      <p>Levels are loaded directly from the original Dream In Cube data files. Reach the end of all cubes to win.</p>
+      <button value="close">Close</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="./assets/main.js"></script>
+</body>
+</html>
