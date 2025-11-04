@@ -17,13 +17,23 @@
         <button id="restart-game" type="button" disabled>Restart</button>
         <button id="show-help" type="button">Help</button>
       </div>
-      <p class="hint">Use W/A/S/D or the arrow keys to move.</p>
+      <p class="hint">Use W/A/S/D, the arrow keys, or the on-screen controls to move.</p>
       <div id="level-info" class="level-info"></div>
       <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
     </section>
 
     <section class="game-panel" aria-label="Game board">
       <div id="game-grid" class="grid" role="grid" aria-colcount="10" aria-rowcount="10"></div>
+      <div class="touch-controls" role="group" aria-label="Touch movement controls">
+        <div class="touch-row">
+          <button type="button" data-direction="up" aria-label="Move up" aria-pressed="false"><span aria-hidden="true">▲</span></button>
+        </div>
+        <div class="touch-row">
+          <button type="button" data-direction="left" aria-label="Move left" aria-pressed="false"><span aria-hidden="true">◀</span></button>
+          <button type="button" data-direction="down" aria-label="Move down" aria-pressed="false"><span aria-hidden="true">▼</span></button>
+          <button type="button" data-direction="right" aria-label="Move right" aria-pressed="false"><span aria-hidden="true">▶</span></button>
+        </div>
+      </div>
     </section>
 
     <aside class="sidebar">

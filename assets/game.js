@@ -31,6 +31,10 @@ export default class Game {
       levelInfo: document.querySelector('#level-info'),
       helpDialog: document.querySelector('#help-dialog'),
       miniCells: Array.from(document.querySelectorAll('.mini-cell')),
+      touchControls: document.querySelector('.touch-controls'),
+      touchButtons: Array.from(
+        document.querySelectorAll('.touch-controls button[data-direction]'),
+      ),
     };
 
     this.levels = [];
@@ -39,6 +43,7 @@ export default class Game {
     this.isActive = false;
     this.isBusy = false;
     this.cells = [];
+    this.touchButtonTimers = new WeakMap();
   }
 
   async init() {
@@ -46,6 +51,7 @@ export default class Game {
       await this.loadLevels();
       this.setupGrid();
       this.attachEventListeners();
+      this.configureTouchControlAvailability();
       this.setStatus('Ready when you are. Press Start to enter the cube.');
     } catch (error) {
       console.error(error);
@@ -81,6 +87,90 @@ export default class Game {
     }
 
     window.addEventListener('keydown', (event) => this.handleKeyDown(event));
+
+    if (this.dom.touchButtons.length) {
+      this.dom.touchButtons.forEach((button) => {
+        const direction = this.parseDirection(button.dataset.direction);
+        if (!direction) {
+          return;
+        }
+
+        button.addEventListener('pointerdown', (event) => {
+          event.preventDefault();
+          button.dataset.pointerActive = 'true';
+          this.startTouchButtonPress(button);
+          this.handleDirection(direction);
+        });
+
+        const clearButtonState = () => {
+          this.clearTouchButtonPress(button);
+          delete button.dataset.pointerActive;
+        };
+
+        button.addEventListener('pointerup', clearButtonState);
+        button.addEventListener('pointerleave', clearButtonState);
+        button.addEventListener('pointercancel', clearButtonState);
+
+        button.addEventListener('click', (event) => {
+          event.preventDefault();
+          if (button.dataset.pointerActive === 'true') {
+            return;
+          }
+          this.flashTouchButton(button);
+          this.handleDirection(direction);
+        });
+      });
+    }
+  }
+
+  configureTouchControlAvailability() {
+    const controls = this.dom.touchControls;
+    if (!controls || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    const mediaQuery = window.matchMedia('(pointer: coarse)');
+    const applyAvailability = (matches) => {
+      controls.classList.toggle('is-available', matches);
+    };
+
+    applyAvailability(mediaQuery.matches);
+
+    const listener = (event) => applyAvailability(event.matches);
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', listener);
+    } else if (typeof mediaQuery.addListener === 'function') {
+      mediaQuery.addListener(listener);
+    }
+  }
+
+  startTouchButtonPress(button) {
+    this.cancelTouchButtonTimer(button);
+    button.classList.add('is-pressed');
+    button.setAttribute('aria-pressed', 'true');
+  }
+
+  clearTouchButtonPress(button) {
+    this.cancelTouchButtonTimer(button);
+    button.classList.remove('is-pressed');
+    button.setAttribute('aria-pressed', 'false');
+  }
+
+  flashTouchButton(button) {
+    this.startTouchButtonPress(button);
+    const timeout = window.setTimeout(() => {
+      this.clearTouchButtonPress(button);
+    }, 160);
+    this.touchButtonTimers.set(button, timeout);
+  }
+
+  cancelTouchButtonTimer(button) {
+    const timeout = this.touchButtonTimers.get(button);
+    if (timeout) {
+      window.clearTimeout(timeout);
+      this.touchButtonTimers.delete(button);
+    }
   }
 
   setupGrid() {
@@ -183,8 +273,35 @@ export default class Game {
 
     if (direction) {
       event.preventDefault();
-      this.attemptMove(direction);
+      this.handleDirection(direction);
     }
+  }
+
+  parseDirection(value) {
+    switch ((value ?? '').toLowerCase()) {
+      case 'up':
+        return Direction.UP;
+      case 'down':
+        return Direction.DOWN;
+      case 'left':
+        return Direction.LEFT;
+      case 'right':
+        return Direction.RIGHT;
+      default:
+        return null;
+    }
+  }
+
+  handleDirection(direction) {
+    if (!direction || !this.isActive || this.isBusy) {
+      return;
+    }
+
+    if (this.dom.helpDialog?.open) {
+      return;
+    }
+
+    this.attemptMove(direction);
   }
 
   attemptMove(direction) {
