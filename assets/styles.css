@@ -299,15 +299,59 @@ button:not([disabled]):hover {
 @media (max-width: 900px) {
   body {
     padding: 16px;
+    align-items: flex-start;
   }
 
   .layout {
-    grid-template-columns: 1fr;
-    grid-template-areas: none;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "status"
+      "game"
+      "sidebar";
+  }
+
+  .status-panel,
+  .game-panel,
+  .sidebar {
+    padding: 16px;
+  }
+
+  .button-row {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
   }
 
   .mini-cell {
     width: 40px;
     height: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --cell-size: min(9.6vw, 36px);
+  }
+
+  body {
+    padding: 12px;
+  }
+
+  .layout {
+    gap: 16px;
+  }
+
+  .grid {
+    gap: 2px;
+    padding: 10px;
+  }
+
+  .mini-cell {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
   }
 }
